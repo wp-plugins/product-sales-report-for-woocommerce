@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Product Sales Report for WooCommerce
  * Description: Generates a report on individual WooCommerce products sold during a specified time period.
- * Version: 1.0
+ * Version: 1.1
  * Author: Hearken Media
  * Author URI: http://hearkenmedia.com/landing-wp-plugin.php?utm_source=product-sales-report&utm_medium=link&utm_campaign=wp-widget-link
  * License: GNU General Public License version 2 or later
@@ -106,6 +106,18 @@ function hm_sbp_page() {
 						</td>
 					</tr>
 					<tr valign="top">
+						<th scope="row">
+							<label>Report Fields:</label>
+						</th>
+						<td>
+							<label><input type="checkbox" name="fields[]" checked="checked" value="product_id" /> Product ID</label><br />
+							<label><input type="checkbox" name="fields[]" checked="checked" value="product_sku" /> Product SKU</label><br />
+							<label><input type="checkbox" name="fields[]" checked="checked" value="product_name" /> Product Name</label><br />
+							<label><input type="checkbox" name="fields[]" checked="checked" value="quantity_sold" /> Quantity Sold</label><br />
+							<label><input type="checkbox" name="fields[]" checked="checked" value="gross_sales" /> Gross Sales</label>
+						</td>
+					</tr>
+					<tr valign="top">
 						<th scope="row" colspan="2" class="th-full">
 							<label>
 								<input type="checkbox" name="limit_on" />
@@ -157,6 +169,10 @@ function hm_sbp_on_init() {
 		// Verify the nonce
 		check_admin_referer('hm_sbp_do_export');
 		
+		// Check if no fields are selected
+		if (empty($_POST['fields']))
+			return;
+		
 		// Assemble the filename for the report download
 		$filename =  'Product Sales - ';
 		if (!empty($_POST['cat']) && is_numeric($_POST['cat'])) {
@@ -182,7 +198,18 @@ function hm_sbp_on_init() {
 
 // This function outputs the report header row
 function hm_sbp_export_header($dest) {
-	fputcsv($dest, array('Product ID', 'Product Name', 'Quantity Sold', 'Gross Sales'));
+	$header = array();
+	if (in_array('product_id', $_POST['fields']))
+		$header[] = 'Product ID';
+	if (in_array('product_sku', $_POST['fields']))
+		$header[] = 'Product SKU';
+	if (in_array('product_name', $_POST['fields']))
+		$header[] = 'Product Name';
+	if (in_array('quantity_sold', $_POST['fields']))
+		$header[] = 'Quantity Sold';
+	if (in_array('gross_sales', $_POST['fields']))
+		$header[] = 'Gross Sales';
+	fputcsv($dest, $header);
 }
 
 // This function generates and outputs the report body rows
@@ -262,7 +289,18 @@ function hm_sbp_export_body($dest) {
 	foreach ($sold_products as $product) {
 		if (!empty($category_id) && !in_array($product->product_id, $product_ids))
 			continue;
-		fputcsv($dest, array($product->product_id, html_entity_decode(get_the_title($product->product_id)), $product->quantity, $product->gross));
+		$row = array();
+		if (in_array('product_id', $_POST['fields']))
+			$row[] = $product->product_id;
+		if (in_array('product_sku', $_POST['fields']))
+			$row[] = get_post_meta($product->product_id, '_sku', true);
+		if (in_array('product_name', $_POST['fields']))
+			$row[] = html_entity_decode(get_the_title($product->product_id));
+		if (in_array('quantity_sold', $_POST['fields']))
+			$row[] = $product->quantity;
+		if (in_array('gross_sales', $_POST['fields']))
+			$row[] = $product->gross;
+		fputcsv($dest, $row);
 	}
 }
 ?>
