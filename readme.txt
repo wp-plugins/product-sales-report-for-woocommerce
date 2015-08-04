@@ -2,8 +2,8 @@
 Contributors: hearken
 Tags: woocommerce, sales, report, export, csv
 Requires at least: 4.0
-Tested up to: 4.2.2
-Stable tag: 1.1
+Tested up to: 4.2.4
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,9 @@ Alternatively, you can manually upload the plugin to your wp-content/plugins dir
 2. Sample output (simulated)
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed timezone issue affecting the report period
 
 = 1.1 =
 * Added checkboxes to select which fields to include in the report

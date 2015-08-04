@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Product Sales Report for WooCommerce
  * Description: Generates a report on individual WooCommerce products sold during a specified time period.
- * Version: 1.1
+ * Version: 1.1.1
  * Author: Hearken Media
  * Author URI: http://hearkenmedia.com/landing-wp-plugin.php?utm_source=product-sales-report&utm_medium=link&utm_campaign=wp-widget-link
  * License: GNU General Public License version 2 or later
@@ -141,12 +141,13 @@ function hm_sbp_page() {
 				</p>
 			</form>
 			
-			<p>
-				Plugin by:<br />
-				<a href="http://hearkenmedia.com/landing-wp-plugin.php?utm_source=product-sales-report&amp;utm_medium=link&amp;utm_campaign=wp-widget-link" target="_blank">
-					<img src="'.plugins_url('images/hm-logo.png', __FILE__).'" alt="Hearken Media" style="width: 250px;" />
-				</a>
-			</p>
+			<div style="background-color: #fff; border: 1px solid #ccc; padding: 20px;">
+				<h3 style="margin: 0;">Plugin by:</h3>
+				<a href="http://hearkenmedia.com/landing-wp-plugin.php?utm_source=product-sales-report&amp;utm_medium=link&amp;utm_campaign=wp-widget-link" target="_blank"><img src="'.plugins_url('images/hm-logo.png', __FILE__).'" alt="Hearken Media" style="width: 250px;" /></a><br />
+				<a href="https://wordpress.org/support/view/plugin-reviews/product-sales-report-for-woocommerce" target="_blank"><strong>
+					If you find this plugin useful, please write a brief review!
+				</strong></a>
+			</div>
 			
 		</div>
 		
@@ -224,23 +225,23 @@ function hm_sbp_export_body($dest) {
 	// Calculate report start and end dates (timestamps)
 	switch ($_POST['report_time']) {
 		case '0d':
-			$end_date = strtotime('midnight');
+			$end_date = strtotime('midnight', current_time('timestamp'));
 			$start_date = $end_date;
 			break;
 		case '1d':
-			$end_date = strtotime('midnight') - 86400;
+			$end_date = strtotime('midnight', current_time('timestamp')) - 86400;
 			$start_date = $end_date;
 			break;
 		case '7d':
-			$end_date = strtotime('midnight') - 86400;
+			$end_date = strtotime('midnight', current_time('timestamp')) - 86400;
 			$start_date = $end_date - (86400 * 7);
 			break;
 		case 'custom':
-			$end_date = strtotime($_POST['report_end']);
-			$start_date = strtotime($_POST['report_start']);
+			$end_date = strtotime('midnight', strtotime($_POST['report_end']));
+			$start_date = strtotime('midnight', strtotime($_POST['report_start']));
 			break;
 		default: // 30 days is the default
-			$end_date = strtotime('midnight') - 86400;
+			$end_date = strtotime('midnight', current_time('timestamp')) - 86400;
 			$start_date = $end_date - (86400 * 30);
 	}
 	
